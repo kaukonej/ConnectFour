@@ -20,7 +20,6 @@ public class ConnectFourPanel extends JPanel implements ActionListener{
 	private ConnectFourGame game;
 	
 	public ConnectFourPanel(JMenuItem panelQuitItem, JMenuItem panelGameItem){
-		
 		game = new ConnectFourGame(SIZE);
 		
 		newGameItem = panelGameItem;
@@ -107,6 +106,7 @@ public class ConnectFourPanel extends JPanel implements ActionListener{
 				
 //				if (row != -1) {
 //					game.computerTurn();
+//					updateBoard();
 //				}
 			}
 		}

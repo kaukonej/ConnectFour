@@ -19,7 +19,7 @@ public class ConnectFourGame {
 	// row is your y-axis
 	
 	public ConnectFourGame(int pSize) {
-		// 7x6 board
+		// 10x10 board
 		size = 10;
 		// Cols, rows
 		board = new int[size][(size)];
@@ -123,9 +123,11 @@ public class ConnectFourGame {
 		for (int numInARow = 0; numInARow < connectNum; numInARow++) {
 			if (board[yCoord][xCoord] != pieceType) {
 				return false;
+			} else if (numInARow == connectNum - 1 && yCoord == 0) {
+				return true;
 			} else if (xCoord + horizontalDir < size && yCoord - 
 					verticalDir < size && xCoord + horizontalDir 
-					> 0 && yCoord - verticalDir > 0) {
+					>= 0 && yCoord - verticalDir >= 0) {
 				xCoord += horizontalDir;
 				yCoord -= verticalDir;
 			} else {
@@ -182,19 +184,20 @@ public class ConnectFourGame {
 	public int getPiece(int x, int y) {
 		return board[y][x];
 	}
+	
+	// Checks if the space under a coordinate it filled or not.
+	private boolean canSupportPiece(int row, int col) {
+		if (row < size - 1) {
+			if (board[row - 1][col] != -1) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
 }
 	
-//// Checks if the space under a coordinate it filled or not.
-//private boolean canSupportPiece(int row, int col) {
-//	if (row < size - 1) {
-//		if (board[row - 1][col] != -1) {
-//			return true;
-//		} else {
-//			return false;
-//		}
-//	}
-//	return true;
-//}
 
 //private boolean checkFourInARow(int pieceType, int row, int col) {
 //	int piece = pieceType;
