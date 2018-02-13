@@ -87,8 +87,7 @@ public class ConnectFourGame {
 
 	public void reset() {
 		// reset instance variables to their original values
-		size = 10;
-		board = new int[size][(size)];
+		board = new int[size][size];
 		for (int row = 0; row < size; row++) {
 			for (int col = 0; col < size; col++) {
 				board[col][row] = BLANK;
@@ -165,5 +164,18 @@ public class ConnectFourGame {
 
 	public int getPiece(int x, int y) {
 		return board[y][x];
+	}
+	
+	public int getSize() {
+		return size;
+	}
+	
+	public void setSize(int size) {
+		if (size >= 5 && size <= 10) {
+			this.size = size;
+		} else {
+			this.size = 7;
+			// TO DO: How to add JOptionPane to show it defaulted to 7?
+		}
 	}
 }
