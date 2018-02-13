@@ -90,27 +90,44 @@ public class ConnectFourGame3D {
 	// pieceType is which player you're searching for, connectNum is how many pieces must be in a row to return true
 	// horizontalDir and verticalDir are for which direction to check, where 1 is up/right, -1 is left/down, and 0 is no change
 	// initialX and initialY and the coordinates to check from, e.g. check (0,0), (0,1), (0,2), and (0,3) would be (player, 4, 0, 1, 0, 0)
+//	private boolean checkConnections(int pieceType, int connectNum, int horizontalDir, int verticalDir, int depthDir, int initialX, int initialY, int initialZ) {
+//		int xCoord = initialX;
+//		int yCoord = initialY;
+//		int zCoord = initialZ;
+//		for (int numInARow = 0; numInARow < connectNum; numInARow++) {
+//			if (board[yCoord][xCoord][zCoord] != pieceType) {
+//				return false;
+//				// TO DO: Check if Z-direction needs to be modified
+//			} else if (numInARow == connectNum - 1 && yCoord == 0) {
+//				return true;
+//			} else if (xCoord + horizontalDir < size && yCoord - 
+//					verticalDir < size && xCoord + horizontalDir 
+//					>= 0 && yCoord - verticalDir >= 0 && zCoord 
+//					+ depthDir < size && zCoord + depthDir >= 0) {
+//				xCoord += horizontalDir;
+//				yCoord -= verticalDir;
+//				zCoord += depthDir;
+//			} else {
+//				return false;
+//			}
+//		}
+//		return true;
+//	}
+	
 	private boolean checkConnections(int pieceType, int connectNum, int horizontalDir, int verticalDir, int depthDir, int initialX, int initialY, int initialZ) {
 		int xCoord = initialX;
 		int yCoord = initialY;
 		int zCoord = initialZ;
 		for (int numInARow = 0; numInARow < connectNum; numInARow++) {
-			if (board[yCoord][xCoord][zCoord] != pieceType) {
+			if (xCoord >= size || yCoord >= size || zCoord >= size || xCoord < 0 || yCoord < 0 || zCoord < 0) {
 				return false;
-				// TO DO: Check if Z-direction needs to be modified
-			} else if (numInARow == connectNum - 1 && yCoord == 0) {
-				return true;
-			} else if (xCoord + horizontalDir < size && yCoord - 
-					verticalDir < size && xCoord + horizontalDir 
-					>= 0 && yCoord - verticalDir >= 0 && zCoord 
-					+ depthDir < size && zCoord + depthDir >= 0) {
-				xCoord += horizontalDir;
-				yCoord -= verticalDir;
-				zCoord += depthDir;
-			} else {
+			} else if (board[yCoord][xCoord][zCoord] != pieceType) {
 				return false;
 			}
-		}
+			xCoord += horizontalDir;
+			yCoord -= verticalDir;
+			zCoord += depthDir;
+		} 
 		return true;
 	}
 

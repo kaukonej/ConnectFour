@@ -72,23 +72,19 @@ public class ConnectFourGame {
 	private boolean checkConnections(int pieceType, int connectNum, int horizontalDir, int verticalDir, int initialX, int initialY) {
 		int xCoord = initialX;
 		int yCoord = initialY;
+
 		for (int numInARow = 0; numInARow < connectNum; numInARow++) {
-			if (board[yCoord][xCoord] != pieceType) {
+			if (xCoord >= size || yCoord >= size  || xCoord < 0 || yCoord < 0) {
 				return false;
-			} else if (numInARow == connectNum - 1 && yCoord == 0) {
-				return true;
-			} else if (xCoord + horizontalDir < size && yCoord - 
-					verticalDir < size && xCoord + horizontalDir 
-					>= 0 && yCoord - verticalDir >= 0) {
-				xCoord += horizontalDir;
-				yCoord -= verticalDir;
-			} else {
+			} else if (board[yCoord][xCoord] != pieceType) {
 				return false;
 			}
-		}
+			xCoord += horizontalDir;
+			yCoord -= verticalDir;
+		} 
 		return true;
 	}
-	
+
 	public void reset() {
 		// reset instance variables to their original values
 		size = 10;
@@ -103,11 +99,11 @@ public class ConnectFourGame {
 
 	public void computerTurn() {
 		compAttemptWinOrBlock(0);
-		
+
 		if (!isWinner(COMPUTER)) {
 			compAttemptWinOrBlock(1);
 		}
-		
+
 		// place in a random column (does not work)
 		if (getTurn() == COMPUTER) {
 			// do AI
@@ -151,17 +147,17 @@ public class ConnectFourGame {
 	}
 
 	// Checks if the space under a coordinate it filled or not.
-		public boolean canSupportPiece(int row, int col) {
-			if (row < size - 1) {
-				if (board[row - 1][col] != -1) {
-					return true;
-				} else {
-					return false;
-				}
+	public boolean canSupportPiece(int row, int col) {
+		if (row < size - 1) {
+			if (board[row - 1][col] != -1) {
+				return true;
+			} else {
+				return false;
 			}
-			return true;
 		}
-	
+		return true;
+	}
+
 	// get whose turn it is currently
 	public int getTurn() {
 		return currentTurn;
