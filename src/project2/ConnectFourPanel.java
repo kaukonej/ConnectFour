@@ -16,11 +16,16 @@ public class ConnectFourPanel extends JPanel implements ActionListener{
 	private ImageIcon iconBlank;
 	private ImageIcon iconPlayer1;
 	private ImageIcon iconPlayer2;
+	
+	private JLabel currentTurnLabel;
+	private JLabel currentTurnIcon;
 
 	private ConnectFourGame game;
+	private boolean AIFlag;
 
 	public ConnectFourPanel(JMenuItem panelQuitItem, JMenuItem panelGameItem){
 		game = new ConnectFourGame(SIZE);
+		AIFlag = false;
 		try {
 			game.setSize(Integer.parseInt(JOptionPane.showInputDialog("How many spaces wide/tall should the board be? (5 to 10)")));
 		} catch (Exception e) {
@@ -79,6 +84,20 @@ public class ConnectFourPanel extends JPanel implements ActionListener{
 			}
 		}
 		
+		currentTurnLabel = new JLabel("Next:");
+        loc.gridx = 0;
+        loc.gridy = SIZE + 2;
+        loc.insets.bottom = 15;
+        loc.insets.top = 15;
+        add(currentTurnLabel, loc);
+        
+        currentTurnIcon = new JLabel("",iconPlayer1,SwingConstants.CENTER);
+        loc.gridx = 1;
+        loc.gridy = SIZE + 2;
+        loc.insets.bottom = 15;
+        loc.insets.top = 15;
+        add(currentTurnIcon, loc);
+		
 		revalidate();
 		repaint();
 	}
@@ -88,7 +107,6 @@ public class ConnectFourPanel extends JPanel implements ActionListener{
 	//--------------------------------------------------------------
 	public void actionPerformed (ActionEvent event)
 	{
-
 		JComponent comp = (JComponent) event.getSource();
 
 		for (int col = 0; col < SIZE; col++) {
@@ -98,26 +116,26 @@ public class ConnectFourPanel extends JPanel implements ActionListener{
 				if (row == -1)
 					JOptionPane.showMessageDialog(null, "Col is full!");
 				else if (game.getTurn() == 0) {
-					//matrix[row][col].setIcon((game.getTurn() == 1) ? iconPlayer1 : iconPlayer2);
 					matrix[row][col].setIcon(iconPlayer1);
 					if (game.isWinner(0)) {
 						JOptionPane.showMessageDialog(null, "Player " + (game.getTurn() + 1) + " Wins!");
 						clearBoard();
 					}
-					game.finishTurn();
+					game.switchPlayer();
+					currentTurnIcon.setIcon(iconPlayer2);
 				} else {
 					matrix[row][col].setIcon(iconPlayer2);
 					if (game.isWinner(1)) {
 						JOptionPane.showMessageDialog(null, "Player " + (game.getTurn() + 1) + " Wins!");
 						clearBoard();
 					}
-					game.finishTurn();
+					game.switchPlayer();
+					currentTurnIcon.setIcon(iconPlayer1);
 				}
 
-				//				if (row != -1) {
-				//					game.computerTurn();
-				//					updateBoard();
-				//				}
+				if (row != -1 && AIFlag) {
+					game.computerTurn();
+				}
 			}
 		}
 
@@ -134,5 +152,9 @@ public class ConnectFourPanel extends JPanel implements ActionListener{
 
 		if (comp == quitItem)
 			System.exit(1);
+	}
+	
+	public void setAI(boolean flag) {
+		AIFlag = flag;
 	}
 }

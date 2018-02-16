@@ -50,6 +50,7 @@ public class ConnectFour {
         	frame.getContentPane().add(panel);
         } else if (gameString.equalsIgnoreCase("1")) {
         	ConnectFourPanel panel = new ConnectFourPanel(quitItem,gameItem);
+        	panel.setAI(true);
         	frame.getContentPane().add(panel);
         } else if (gameString.equals("2")) {
         	ConnectFourPanel3D panel = new ConnectFourPanel3D(quitItem,gameItem);
