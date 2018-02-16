@@ -162,19 +162,19 @@ public class ConnectFourGame {
 	 * the future.
 	 *****************************************************************/
 	public void computerTurn() {
+		
 		// Computer tries to win.
-		compAttemptWinOrBlock(0);
+		boolean turnDone = compAttemptWinOrBlock(0);
 		// If it didn't win, tries to block.
-		if (!isWinner(COMPUTER)) {
-			compAttemptWinOrBlock(1);
+		if (!turnDone) {
+			turnDone = compAttemptWinOrBlock(1);
 		}
 		// If neither of the above have been met, try to make a logical 
 		// move.
-		if (getTurn() == COMPUTER) {
-			minmax();
-			//Random rand = new Random();
-			//selectCol(rand.nextInt(size));
-			//switchPlayer();
+		if (!turnDone) {
+			//minmax();
+			Random rand = new Random();
+			selectCol(rand.nextInt(size));
 		}
 	}
 
@@ -182,8 +182,9 @@ public class ConnectFourGame {
 	 * This method checks if a given person can win next turn for any 
 	 * column. If it can, place a computer piece there.
 	 * @param person Who to check for a possible win.
+	 * @return true if can make move
 	 *****************************************************************/
-	private void compAttemptWinOrBlock(int person) {
+	private boolean compAttemptWinOrBlock(int person) {
 		// Place in every column.
 		for (int col = 0; col < size; col++) {
 			// If piece can drop in a row
@@ -195,12 +196,14 @@ public class ConnectFourGame {
 				// coordinate.
 				if (isWinner(person)) {
 					board[lastY][col] = COMPUTER;
+					return true;
 				} else {
 					// If they can't win, undo the move.
 					board[lastY][col] = -1;
 				}
 			}
 		}
+		return false;
 	}
 	
 	// Scores the move based on if the computer or player are closer to winning
