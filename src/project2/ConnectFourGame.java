@@ -1,5 +1,7 @@
 package project2;
 
+import java.util.Random;
+
 public class ConnectFourGame {
 	/** The Connect Four board, with rows and columns for coordinates, 
 	 * respectively. */
@@ -170,6 +172,9 @@ public class ConnectFourGame {
 		// move.
 		if (getTurn() == COMPUTER) {
 			minmax();
+			//Random rand = new Random();
+			//selectCol(rand.nextInt(size));
+			//switchPlayer();
 		}
 	}
 
@@ -182,7 +187,7 @@ public class ConnectFourGame {
 		// Place in every column.
 		for (int col = 0; col < size; col++) {
 			// If piece can drop in a row
-			if (!spaceOccupied(size, col)) {
+			if (!spaceOccupied(size - 1, col)) {
 				// Make given person place a piece, and see if they win.
 				currentTurn = person;
 				int lastY = selectCol(col);
