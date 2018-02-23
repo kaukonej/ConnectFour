@@ -102,6 +102,20 @@ public class ConnectFourPanel extends JPanel implements ActionListener{
 		repaint();
 	}
 
+	public void updateBoard() {
+		for (int row = SIZE - 1; row >= 0; row--) {
+			for (int col = 0; col < SIZE; col++) {
+				if (game.getPiece(col, row) == 0) {
+					matrix[row][col].setIcon(iconPlayer1);
+				} else if (game.getPiece(col, row) == 1) {
+					matrix[row][col].setIcon(iconPlayer2);
+				} else if (game.getPiece(col, row) == -1) {
+					matrix[row][col].setIcon(iconBlank);
+				}
+			}
+		}
+	}
+	
 	//--------------------------------------------------------------
 	//  Updates the counter and label when the button is pushed.
 	//--------------------------------------------------------------
@@ -113,28 +127,30 @@ public class ConnectFourPanel extends JPanel implements ActionListener{
 			if (selection[col] == comp) {
 
 				int row = game.selectCol(col);
-				if (row == -1)
+				if (row == -1) // if column full
 					JOptionPane.showMessageDialog(null, "Col is full!");
-				else if (game.getTurn() == 0) {
+				else if (game.getTurn() == 0) { // if not full and p1 turn
 					matrix[row][col].setIcon(iconPlayer1);
-					if (game.isWinner(0)) {
-						JOptionPane.showMessageDialog(null, "Player " + (game.getTurn() + 1) + " Wins!");
-						clearBoard();
-					}
-					game.switchPlayer();
 					currentTurnIcon.setIcon(iconPlayer2);
-				} else {
+					game.setTurn(1);
+				} else if (!AIFlag){ // if not AI game, p2 must have been the one who took a turn
 					matrix[row][col].setIcon(iconPlayer2);
-					if (game.isWinner(1)) {
-						JOptionPane.showMessageDialog(null, "Player " + (game.getTurn() + 1) + " Wins!");
-						clearBoard();
-					}
-					game.switchPlayer();
 					currentTurnIcon.setIcon(iconPlayer1);
+					game.setTurn(0);
 				}
-
-				if (row != -1 && AIFlag) {
+				if (row != -1 && AIFlag) { // if not full and it is an AI game
 					game.computerTurn();
+					game.setTurn(0);
+					updateBoard();
+				}
+				if (game.isWinner(0)) { // check for winner, and if win restart with p1's turn next
+					JOptionPane.showMessageDialog(null, "Player " + (game.getTurn() + 1) + " Wins!");
+					clearBoard();
+					game.setTurn(0);
+				} else if (game.isWinner(1)) {
+					JOptionPane.showMessageDialog(null, "Player " + (game.getTurn() + 1) + " Wins!");
+					clearBoard();
+					game.setTurn(0);
 				}
 			}
 		}
