@@ -152,6 +152,10 @@ public class ConnectFourPanel extends JPanel implements ActionListener{
 					clearBoard();
 					game.setTurn(0);
 				}
+				
+				if (game.spaceOccupied(0, col)) {
+					selection[col].setEnabled(false);
+				}
 			}
 		}
 

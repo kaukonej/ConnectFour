@@ -59,6 +59,18 @@ public class ConnectFourGame {
 		}
 		return -1;
 	}
+	
+	public int selectColMinmax(int[][] brd,int col) {		
+		for (int row = size - 1; row >= 0; row--) {
+			// try to place piece, starting from the bottom (height 0 
+			// to size)
+			if (!spaceOccupiedMinmax(brd, row, col)) {
+				brd[row][col] = getTurn();
+				return row;
+			}
+		}
+		return -1;
+	}
 
 	/******************************************************************
 	 * Checks to see if a given player has won the game.
@@ -142,6 +154,31 @@ public class ConnectFourGame {
 		return true;
 	}
 	
+//	private boolean checkConnectionsMinmax(int[][] brd, int pieceType, int connectNum, 
+//			int horizontalDir, int verticalDir, int initialX, int 
+//			initialY) {
+//		int xCoord = initialX;
+//		int yCoord = initialY;
+//		// Must be able to loop connectNum times to return true.
+//		for (int numInARow = 0; numInARow < connectNum; numInARow++) {
+//			// If the coordinate being checked is out of bounds, 
+//			// return false.
+//			if (xCoord >= size || yCoord >= size  || xCoord < 0 || 
+//					yCoord < 0) {
+//				return false;
+//			// If the coordinate being checked is not the pieceType, 
+//			// return false.
+//			} else if (brd[yCoord][xCoord] != pieceType) {
+//				return false;
+//			}
+//			// Increase once so the next piece in the given direction 
+//			// will be checked.
+//			xCoord += horizontalDir;
+//			yCoord -= verticalDir;
+//		} 
+//		return true;
+//	}
+	
 	/******************************************************************
 	 * Resets the board to all blank pieces, and if the size has changed 
 	 * it updates the size.
@@ -164,17 +201,15 @@ public class ConnectFourGame {
 	public void computerTurn() {
 		
 		// Computer tries to win.
-		boolean turnDone = compAttemptWinOrBlock(0);
+		boolean turnDone = compAttemptWinOrBlock(1);
 		// If it didn't win, tries to block.
 		if (!turnDone) {
-			turnDone = compAttemptWinOrBlock(1);
+			turnDone = compAttemptWinOrBlock(0);
 		}
 		// If neither of the above have been met, try to make a logical 
 		// move.
 		if (!turnDone) {
-			//minmax();
-			Random rand = new Random();
-			selectCol(rand.nextInt(size));
+			computerTurn(4);
 		}
 	}
 
@@ -188,7 +223,7 @@ public class ConnectFourGame {
 		// Place in every column.
 		for (int col = 0; col < size; col++) {
 			// If piece can drop in a row
-			if (!spaceOccupied(size - 1, col)) {
+			if (!spaceOccupied(0, col)) {
 				// Make given person place a piece, and see if they win.
 				currentTurn = person;
 				int lastY = selectCol(col);
@@ -206,135 +241,201 @@ public class ConnectFourGame {
 		return false;
 	}
 	
-	// Scores the move based on if the computer or player are closer to winning
-			private int score(int[][] board, boolean computerTurn, int col, int row)
+//	// Scores the move based on if the computer or player are 
+//	   closer to winning
+//			private int score(int[][] board, boolean computerTurn,
+//			int col, int row, int depth)
+//			{
+//				if(computerTurn)
+//				{
+//			if(checkConnectionsMinmax(board, COMPUTER, 2, 0, 1, col, row)
+//			|| checkConnectionsMinmax(board, COMPUTER, 2, 1, 0, col, row)
+//			|| checkConnectionsMinmax(board, COMPUTER, 2, 1, 1, col, row)
+//			|| checkConnectionsMinmax(board, COMPUTER, 2, -1, 1, col, row))
+//					{
+//						return 50/depth;
+//					}
+//				
+//			if(checkConnectionsMinmax(board, COMPUTER, 3, 0, 1, col, row)
+//			|| checkConnectionsMinmax(board, COMPUTER, 3, 1, 0, col, row)
+//			|| checkConnectionsMinmax(board, COMPUTER, 3, 1, 1, col, row)
+//			|| checkConnectionsMinmax(board, COMPUTER, 3, -1, 1, col, row))
+//					{
+//						return 75/depth;
+//					}
+//				
+//			if(checkConnectionsMinmax(board, COMPUTER, 4, 0, 1, col, row)
+//			|| checkConnectionsMinmax(board, COMPUTER, 4, 1, 0, col, row)
+//			|| checkConnectionsMinmax(board, COMPUTER, 4, 1, 1, col, row)
+//			|| checkConnectionsMinmax(board, COMPUTER, 4, -1, 1, col, row))
+//					{
+//						return 1000/depth;
+//					}
+//				}
+//				else
+//				{
+//			if(checkConnectionsMinmax(board, USER, 2, 0, 1, col, row)
+//			|| checkConnectionsMinmax(board, USER, 2, 1, 0, col, row)
+//			|| checkConnectionsMinmax(board, USER, 2, 1, 1, col, row)
+//			|| checkConnectionsMinmax(board, USER, 2, -1, 1, col, row))
+//					{
+//						return -50/depth;
+//					}
+//				
+//			if(checkConnectionsMinmax(board, USER, 3, 0, 1, col, row)
+//			|| checkConnectionsMinmax(board, USER, 3, 1, 0, col, row)
+//			|| checkConnectionsMinmax(board, USER, 3, 1, 1, col, row)
+//			|| checkConnectionsMinmax(board, USER, 3, -1, 1, col, row))
+//					{
+//						return -75/depth;
+//					}
+//				
+//			if(checkConnectionsMinmax(board, USER, 4, 0, 1, col, row)
+//			|| checkConnectionsMinmax(board, USER, 4, 1, 0, col, row)
+//			|| checkConnectionsMinmax(board, USER, 4, 1, 1, col, row)
+//			|| checkConnectionsMinmax(board, USER, 4, -1, 1, col, row))
+//					{
+//						return -1000/depth;
+//					}
+//				}
+//				return 0;
+//			}
+//			
+//			   Places the piece the column that maximizes comp win
+			// potential and minimizes player win potential
+//			private void minmax()
+//			{
+//				int row = 0;
+//				int[] moves = new int[size];
+//				int[][] testboard = board;
+//				int score = 0;
+//					
+//					// Tree
+//					for(int m = 0; m < size; m++)
+//					{
+//						setTurn(1);
+//						int[][] branch1 = testboard;
+//						
+//					// Branch1 //
+//						
+//						// Computer's portion of branch
+//						
+//					// Place a piece in the mth column for the computer
+//						row = selectColMinmax(branch1, m);
+//						score += score(branch1, true, m, row, 1);
+//						
+//						// Branch2 //
+//						for(int p = 0; p < size; p++)
+//						{
+//							setTurn(0);
+//							int[][] branch2 = branch1;
+//					// Place a piece in the pth column for the player
+//							row = selectColMinmax(branch2, p);
+//							score += score(branch2, false, p, row, 2);
+//							
+//							// Branch3 //
+//							for(int q = 0; q < size; q++)
+//							{
+//							setTurn(1);
+//							int[][] branch3 = branch2;
+//					// Place a piece in the qth column for the computer
+//							row = selectColMinmax(branch3, q);
+//							score += score(branch3, true, q, row, 3);
+//							
+//							// Branch4 //
+//							for(int r = 0; r < size; r++)
+//							{
+//								setTurn(0);
+//								int[][] branch4 = branch3;
+//					// Place a piece in the rth column for the player
+//							row = selectColMinmax(branch4, r);
+//							score += score(branch4, false, q, row, 4);
+//							}
+//						}
+//					}
+//					// Add the score of the move to the array of moves
+//					moves[m] += score;
+//				}
+//					
+//				// Pick the best move from the moves arraylist
+//				int bestScore = 0;
+//				int bestMove = 0;
+//				for(int i = 0; i < moves.length; i++)
+//				{
+//					if(moves[i] > bestScore)
+//					{
+//						bestScore = moves[i];
+//						bestMove = i;
+//					}
+//				}
+//				
+//				// Play the best possible move
+//				setTurn(1);
+//				selectCol(bestMove);
+//			}
+	
+	/******************************************************************
+	 * This method looks to make a connection of pieces for the
+	 * computer, and if it can't, looks for a move to block the player
+	 * of the same amount of connections.
+	 * @param Number of connections to look for and block against
+	 * ex. 5 would look for connections of 5, 4, 3, and 2 before
+	 * placing a piece in a random column for the computer.
+	 * @return Returns an integer to stop checking for more connections
+	 * if a good move is found.
+	 *****************************************************************/
+	
+	public int computerTurn(int connections)
+	{
+		for(int i = connections; i > 1; i--)
+		{
+			for(int col = 0; col < size; col++)
 			{
-				if(computerTurn)
-				{
-					if(checkConnections(COMPUTER, 2, 0, 1, col, row)
-							|| checkConnections(COMPUTER, 2, 1, 0, col, row)
-							|| checkConnections(COMPUTER, 2, 1, 1, col, row)
-							|| checkConnections(COMPUTER, 2, -1, 1, col, row))
-					{
-						return 50;
-					}
 				
-					if(checkConnections(COMPUTER, 3, 0, 1, col, row)
-							|| checkConnections(COMPUTER, 3, 1, 0, col, row)
-							|| checkConnections(COMPUTER, 3, 1, 1, col, row)
-							|| checkConnections(COMPUTER, 3, -1, 1, col, row))
-					{
-						return 75;
-					}
-				
-					if(checkConnections(COMPUTER, 4, 0, 1, col, row)
-							|| checkConnections(COMPUTER, 4, 1, 0, col, row)
-							|| checkConnections(COMPUTER, 4, 1, 1, col, row)
-							|| checkConnections(COMPUTER, 4, -1, 1, col, row))
-					{
-						return 100;
-					}
+				setTurn(1);
+				int row = selectCol(col);
+				if (!(row == -1)) {
+						if(checkConnections(COMPUTER, i, 0, 1, col, row)
+								|| checkConnections(COMPUTER, i, 1, 0, col, row)
+								|| checkConnections(COMPUTER, i, 1, 1, col, row)
+								|| checkConnections(COMPUTER, i, -1, 1, col, row))
+						{
+							return 1;
+						}
+						else
+						{
+						board[row][col] = BLANK;
+						}
 				}
-				else
-				{
-					if(checkConnections(USER, 2, 0, 1, col, row)
-							|| checkConnections(USER, 2, 1, 0, col, row)
-							|| checkConnections(USER, 2, 1, 1, col, row)
-							|| checkConnections(USER, 2, -1, 1, col, row))
-					{
-						return -50;
-					}
-				
-					if(checkConnections(USER, 3, 0, 1, col, row)
-							|| checkConnections(USER, 3, 1, 0, col, row)
-							|| checkConnections(USER, 3, 1, 1, col, row)
-							|| checkConnections(USER, 3, -1, 1, col, row))
-					{
-						return -75;
-					}
-				
-					if(checkConnections(USER, 4, 0, 1, col, row)
-							|| checkConnections(USER, 4, 1, 0, col, row)
-							|| checkConnections(USER, 4, 1, 1, col, row)
-							|| checkConnections(USER, 4, -1, 1, col, row))
-					{
-						return -100;
-					}
-				}
-				return 0;
 			}
 			
-			// Places the piece the column that maximizes comp win potential and minimizes player win potential
-			private void minmax()
+			
+			for(int col = 0; col < size; col++)
 			{
-				int row = 0;
-				int[] moves = new int[size];
-					// TODO add arguments to the methods to check which board we are playing on
-					int[][] testboard = board;
-					
-					// Tree
-					for(int m = 0; m < size; m++)
-					{
-						setTurn(1);
-						int score = 0;
-						int[][] branch1 = testboard;
-						
-					// Branch1 //
-						
-						// Computer's portion of branch
-						
-						// Place a piece in the mth column for the computer
-						row = selectCol(m);
-						score += score(branch1, true, m, row);
-						
-						// Branch2 //
-						for(int p = 0; p < size; p++)
+				setTurn(0);
+				int row = selectCol(col);
+				if (!(row == -1)) {
+						if(checkConnections(USER, i, 0, 1, col, row)
+								|| checkConnections(USER, i, 1, 0, col, row)
+								|| checkConnections(USER, i, 1, 1, col, row)
+								|| checkConnections(USER, i, -1, 1, col, row))
 						{
-							setTurn(0);
-							int[][] branch2 = branch1;
-							// Place a piece in the pth column for the player
-							row = selectCol(p);
-							score += score(branch2, false, p, row);
-							
-							// Branch3 //
-							for(int q = 0; q < size; q++)
-							{
-								setTurn(1);
-								int[][] branch3 = branch2;
-								// Place a piece in the qth column for the computer
-								row = selectCol(q);
-								score += score(branch3, true, q, row);
-								
-								// Branch4 //
-								for(int r = 0; r < size; r++)
-								{
-									setTurn(0);
-									int[][] branch4 = branch3;
-									// Place a piece in the rth column for the player
-									row = selectCol(r);
-									score += score(branch4, false, q, row);
-								}
-							}
+							board[row][col] = COMPUTER;
+							return -1;
 						}
-						// Add the score of the move to the array of moves
-						moves[m] += score;
-					}
-				// Pick the best move from the moves arraylist
-				int bestScore = 0;
-				int bestMove = 0;
-				for(int i = 0; i < moves.length; i++)
-				{
-					if(moves[i] > bestScore)
-					{
-						bestScore = moves[i];
-						bestMove = i;
-					}
+						else
+						{
+						board[row][col] = BLANK;
+						}
 				}
-				
-				// Play the best possible move
-				setTurn(1);
-				selectCol(bestMove);
 			}
+			
+		}
+		Random rand = new Random();
+		setTurn(1);
+		selectCol(rand.nextInt(size));
+		return 0;
+	}
 
 	/******************************************************************
 	 * Checks to see if a given coordinate is occupied by either the 
@@ -345,6 +446,14 @@ public class ConnectFourGame {
 	 *****************************************************************/
 	public boolean spaceOccupied(int row, int col) {
 		if (board[row][col] == USER || board[row][col] == COMPUTER) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean spaceOccupiedMinmax(int[][] brd, int row, int col) {
+		if (brd[row][col] == USER || brd[row][col] == COMPUTER) {
 			return true;
 		} else {
 			return false;
