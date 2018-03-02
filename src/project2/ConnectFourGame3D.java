@@ -1,28 +1,38 @@
 package project2;
 
+/**********************************************************************
+ * 
+ * A 3-Dimensional game of Connect Four. Pieces can be dropped into a
+ * column, and it can check to see if a given number of pieces are in
+ * a row. If 4 pieces are in a row, the player who is control of those
+ * pieces wins. The board can vary in size.
+ * @author Justin Kaukonen and Adrian Harrell
+ *
+ *********************************************************************/
 public class ConnectFourGame3D {
 	/** The Connect Four board, with rows and columns for coordinates, 
 	 * respectively. */
 	private int[][][] board;
-	
+
 	/** The size of the board; the total number of columns and rows. */
 	private int size;
-	
+
 	/** Whose turn it is. If 0, it's the user's turn. If 1, it's the 
 	 * computer's turn. */
 	private int currentTurn;
-	
+
+	/** The depth currently being displayed by the GUI. */
 	private int currentDepth;
-	
+
 	/** Represents a blank piece on the board. */
 	public static final int BLANK = -1;
-	
+
 	/** Represents a player 1-occupied piece on the board. */
 	public static final int PLAYER1 = 0;
-	
+
 	/** Represents a player 2-occupied piece on the board. */
 	public static final int PLAYER2 = 1;
-	
+
 	/******************************************************************
 	 * Constructor for a ConnectFourGame. Creates a board of pSize size, 
 	 * and sets every space in it to be blank.
@@ -30,11 +40,15 @@ public class ConnectFourGame3D {
 	 * columns.
 	 *****************************************************************/
 	public ConnectFourGame3D(int pSize) {
-		// 10x10 board
-		size = 10;
+		// If pSize is a valid size, set size to it.
+		if (pSize <= 10 && pSize >= 4) {
+			size = pSize;
+		} else { // Otherwise default to 10.
+			size = 10;
+		}
 		board = new int[size][size][size];
 		currentDepth = 0;
-		// all board is blank
+		// Set board to blank
 		for (int depth = 0; depth < size; depth++) {
 			for (int row = 0; row < size; row++) {
 				for (int col = 0; col < size; col++) {
@@ -53,7 +67,8 @@ public class ConnectFourGame3D {
 	 *****************************************************************/
 	public int selectCol(int col) {		
 		for (int row = size - 1; row >= 0; row--) {
-			// try to place piece, starting from the bottom (height 0 to size)
+			// Try to place piece, starting from the bottom (height 0 
+			// to size)
 			if (!spaceOccupied(row, col, currentDepth)) {
 				board[row][col][currentDepth] = getTurn();
 				return row;
@@ -68,13 +83,13 @@ public class ConnectFourGame3D {
 	 * @return True if they have a winning move, false if not.
 	 *****************************************************************/
 	public boolean isWinner(int person) {
-		// start from bottom left so don't have to check any pieces below
+		// Start from bottom left so don't have to check any pieces below
 		for (int depth = 0; depth < size; depth++) {
 			for (int row = size - 1; row >= 0; row--) {
 				for (int col = 0; col < size; col++) {
-					// if piece at xy belongs to passed user
+					// If piece at xy belongs to passed user
 					if (board[row][col][depth] == person) {
-						// check if 4 in a row, return true or false
+						// Check if 4 in a row, return true or false
 						if (checkFourInARow(person, row, col, depth)) {
 							return true;
 						}
@@ -94,26 +109,27 @@ public class ConnectFourGame3D {
 	 * @param depth Starting coordinate for depth.
 	 * @return True if 4 in a row in any direction, false otherwise.
 	 *****************************************************************/
-	private boolean checkFourInARow(int pieceType, int row, int col, int depth) {
-		// checks up connect four win
+	private boolean checkFourInARow(int pieceType, int row, int col, 
+			int depth) {
+		// Checks in every direction for a connect 4 win.
 		if (checkConnections(pieceType, 4, 0, 1, 0, col, row, depth)
-				// upright upleft
+				// Up-right and up-left
 				|| checkConnections(pieceType, 4, 1, 1, 0, col, row, depth)
 				|| checkConnections(pieceType, 4, -1, 1, 0, col, row, depth)
-				// uprightback upleftback
+				// Up-right-back and up-left-back
 				|| checkConnections(pieceType, 4, 1, 1, 1, col, row, depth)
 				|| checkConnections(pieceType, 4, -1, 1, 1, col, row, depth)
-				// upback
+				// Up-back
 				|| checkConnections(pieceType, 4, 0, 1, 1, col, row, depth)
-				// uprightforward upleftforward
+				// Up-right-forward and up-left-forward
 				|| checkConnections(pieceType, 4, 1, 1, -1, col, row, depth)
 				|| checkConnections(pieceType, 4, -1, 1, -1, col, row, depth)
-				// upforward
+				// Up-forward
 				|| checkConnections(pieceType, 4, 0, 1, -1, col, row, depth)
-				// horizontalX horizontalZ
+				// Horizontal-X and horizontal-Z
 				|| checkConnections(pieceType, 4, 1, 0, 0, col, row, depth)
 				|| checkConnections(pieceType, 4, 0, 0, 1, col, row, depth)
-				// diagonal right, diagonal left
+				// Diagonal left, and diagonal right.
 				|| checkConnections(pieceType, 4, 1, 0, 1, col, row, depth)
 				|| checkConnections(pieceType, 4, -1, 0, 1, col, row, depth)) {
 			return true;
@@ -121,33 +137,6 @@ public class ConnectFourGame3D {
 		return false;
 	}
 
-	// pieceType is which player you're searching for, connectNum is how many pieces must be in a row to return true
-	// horizontalDir and verticalDir are for which direction to check, where 1 is up/right, -1 is left/down, and 0 is no change
-	// initialX and initialY and the coordinates to check from, e.g. check (0,0), (0,1), (0,2), and (0,3) would be (player, 4, 0, 1, 0, 0)
-//	private boolean checkConnections(int pieceType, int connectNum, int horizontalDir, int verticalDir, int depthDir, int initialX, int initialY, int initialZ) {
-//		int xCoord = initialX;
-//		int yCoord = initialY;
-//		int zCoord = initialZ;
-//		for (int numInARow = 0; numInARow < connectNum; numInARow++) {
-//			if (board[yCoord][xCoord][zCoord] != pieceType) {
-//				return false;
-//				// TO DO: Check if Z-direction needs to be modified
-//			} else if (numInARow == connectNum - 1 && yCoord == 0) {
-//				return true;
-//			} else if (xCoord + horizontalDir < size && yCoord - 
-//					verticalDir < size && xCoord + horizontalDir 
-//					>= 0 && yCoord - verticalDir >= 0 && zCoord 
-//					+ depthDir < size && zCoord + depthDir >= 0) {
-//				xCoord += horizontalDir;
-//				yCoord -= verticalDir;
-//				zCoord += depthDir;
-//			} else {
-//				return false;
-//			}
-//		}
-//		return true;
-//	}
-	
 	/******************************************************************
 	 * Checks if a given piece type has a given number of connections 
 	 * in a given direction from a given starting point. (It's a given.)
@@ -167,12 +156,15 @@ public class ConnectFourGame3D {
 	 * row in the given direction from the given coordinate, false 
 	 * otherwise.
 	 *****************************************************************/
-	private boolean checkConnections(int pieceType, int connectNum, int horizontalDir, int verticalDir, int depthDir, int initialX, int initialY, int initialZ) {
+	private boolean checkConnections(int pieceType, int connectNum, 
+			int horizontalDir, int verticalDir, int depthDir, 
+			int initialX, int initialY, int initialZ) {
 		int xCoord = initialX;
 		int yCoord = initialY;
 		int zCoord = initialZ;
 		for (int numInARow = 0; numInARow < connectNum; numInARow++) {
-			if (xCoord >= size || yCoord >= size || zCoord >= size || xCoord < 0 || yCoord < 0 || zCoord < 0) {
+			if (xCoord >= size || yCoord >= size || zCoord >= size || 
+					xCoord < 0 || yCoord < 0 || zCoord < 0) {
 				return false;
 			} else if (board[yCoord][xCoord][zCoord] != pieceType) {
 				return false;
@@ -189,7 +181,7 @@ public class ConnectFourGame3D {
 	 * it updates the size.
 	 *****************************************************************/
 	public void reset() {
-		// reset instance variables to their original values
+		// Reset instance variables to their default values
 		size = 10;
 		currentDepth = 0;
 		board = new int[size][size][size];
@@ -211,7 +203,8 @@ public class ConnectFourGame3D {
 	 * @return True if the coordinate is occupied, false if it is not.
 	 *****************************************************************/
 	private boolean spaceOccupied(int row, int col, int depth) {
-		if (board[row][col][currentDepth] == PLAYER1 || board[row][col][currentDepth] == PLAYER2) {
+		if (board[row][col][currentDepth] == PLAYER1 || 
+				board[row][col][currentDepth] == PLAYER2) {
 			return true;
 		} else {
 			return false;
@@ -226,7 +219,7 @@ public class ConnectFourGame3D {
 		currentTurn = (currentTurn + 1) % 2;
 		return currentTurn;
 	}
-	
+
 	/******************************************************************
 	 * Returns the piece at a given coordinate on the board.
 	 * @param x Column to check for a piece.
@@ -247,7 +240,7 @@ public class ConnectFourGame3D {
 	public int getTurn() {
 		return currentTurn;
 	}
-	
+
 	/******************************************************************
 	 * Gets the currentDepth that is being displayed to the panel.
 	 * @return The current board Depth.

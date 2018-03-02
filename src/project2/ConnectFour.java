@@ -7,9 +7,15 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-
+/**********************************************************************
+ * 
+ * Starts a game of Connect Four. Prompts the user for type of game
+ * to play upon startup, as well as the size if they choose a 2D
+ * game.
+ * @author Justin Kaukonen and Adrian Harrell
+ * 
+ *********************************************************************/
 public class ConnectFour {
-
 	//-----------------------------------------------------------------
 	//  Creates and displays the main program frame.
 	//-----------------------------------------------------------------
@@ -32,9 +38,11 @@ public class ConnectFour {
         frame.setJMenuBar(menus);
         menus.add(fileMenu);
         String gameString = "";
-        while (gameString.length() != 1 || !Pattern.matches("[0,1,2]", gameString)) {
+        while (gameString.length() != 1 || !Pattern.matches("[0,1,2]", 
+        		gameString)) {
         	gameString = JOptionPane.showInputDialog(null, 
-    				"2-Player 2D Game: 0, 1-Player 2D Game: 1, 2-Player 3D Game: 2");
+    				"2-Player 2D Game: 0, 1-Player 2D Game: 1, 2-Player"
+    				+ " 3D Game: 2");
             if (gameString.length() != 1) {
             	JOptionPane.showMessageDialog(frame, "Input must be"
 						+ " a single digit long.");
@@ -46,14 +54,17 @@ public class ConnectFour {
         }
         
         if (gameString.equals("0")) {
-        	ConnectFourPanel panel = new ConnectFourPanel(quitItem,gameItem);
+        	ConnectFourPanel panel = new ConnectFourPanel(quitItem,
+        			gameItem);
         	frame.getContentPane().add(panel);
         } else if (gameString.equalsIgnoreCase("1")) {
-        	ConnectFourPanel panel = new ConnectFourPanel(quitItem,gameItem);
+        	ConnectFourPanel panel = new ConnectFourPanel(quitItem,
+        			gameItem);
         	panel.setAI(true);
         	frame.getContentPane().add(panel);
         } else if (gameString.equals("2")) {
-        	ConnectFourPanel3D panel = new ConnectFourPanel3D(quitItem,gameItem);
+        	ConnectFourPanel3D panel = new ConnectFourPanel3D(quitItem,
+        			gameItem);
         	frame.getContentPane().add(panel);
         }
         

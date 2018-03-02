@@ -5,8 +5,19 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
-public class ConnectFourPanel3D extends JPanel implements ActionListener {
-	
+/**********************************************************************
+ * 
+ * A panel which contains and displays a 3-Dimensional connectFour
+ * game object. Pieces can be placed by pressing buttons, and a new
+ * game can be started by going to File --> New Game. Also handles
+ * the game logic (order of turns, etc). Displays one "depth" of the
+ * board at a time, which can be cycled through with buttons.
+ * @author Justin Kaukonen and Adrian Harrell
+ *
+ *********************************************************************/
+public class ConnectFourPanel3D extends JPanel implements ActionListener 
+{	
+	// Game will always be size 10
 	private final int SIZE = 10;    
 	private JLabel[][] matrix;
 	private JButton[] selection;
@@ -25,7 +36,8 @@ public class ConnectFourPanel3D extends JPanel implements ActionListener {
 	
 	private ConnectFourGame3D game3D;
 	
-	public ConnectFourPanel3D(JMenuItem panelQuitItem, JMenuItem panelGameItem){
+	public ConnectFourPanel3D(JMenuItem panelQuitItem, JMenuItem 
+			panelGameItem){
 		game3D = new ConnectFourGame3D(SIZE);
 		
 		newGameItem = panelGameItem;
@@ -41,6 +53,7 @@ public class ConnectFourPanel3D extends JPanel implements ActionListener {
 		setLayout(new GridBagLayout());
         GridBagConstraints loc = new GridBagConstraints();
 		
+        // Add selection buttons to GUI
 		selection = new JButton[SIZE];
 		for (int col = 0; col < SIZE; col++) {
 			selection[col] = new JButton ("Select");
@@ -56,10 +69,11 @@ public class ConnectFourPanel3D extends JPanel implements ActionListener {
 		}
 		
 		matrix = new JLabel[SIZE][SIZE];
-		
+		// Adds tiles to the board
 		for (int row = 0; row < SIZE; row++) {
 			for (int col = 0; col < SIZE; col++) {
-				matrix[row][col] = new JLabel("",iconBlank,SwingConstants.CENTER);
+				matrix[row][col] = new JLabel("",iconBlank,
+						SwingConstants.CENTER);
 				
 				// Add each element to the GridBagLayout
 		        loc = new GridBagConstraints();
@@ -71,6 +85,7 @@ public class ConnectFourPanel3D extends JPanel implements ActionListener {
 			}
 		}
 		
+		// Adds left/right buttons to cycle through the layers
 		leftButton = new JButton("<");
 		leftButton.addActionListener(this);
 		loc = new GridBagConstraints();
@@ -89,6 +104,7 @@ public class ConnectFourPanel3D extends JPanel implements ActionListener {
         loc.insets.top = 15;
         add(rightButton, loc);	
 		
+        // Adds label that shows current depth displayed on GUI
 		depthLabel = new JLabel("Layer 1");
 		loc.gridx = SIZE - 2;
         loc.gridy = SIZE + 2;
@@ -96,6 +112,7 @@ public class ConnectFourPanel3D extends JPanel implements ActionListener {
         loc.insets.top = 15;
         add(depthLabel, loc);
         
+        // Adds label and icon that shows who goes next
         currentTurnLabel = new JLabel("Next:");
         loc.gridx = 0;
         loc.gridy = SIZE + 2;
@@ -103,7 +120,8 @@ public class ConnectFourPanel3D extends JPanel implements ActionListener {
         loc.insets.top = 15;
         add(currentTurnLabel, loc);
         
-        currentTurnIcon = new JLabel("",iconPlayer1,SwingConstants.CENTER);
+        currentTurnIcon = new JLabel("",iconPlayer1,
+        		SwingConstants.CENTER);
         loc.gridx = 1;
         loc.gridy = SIZE + 2;
         loc.insets.bottom = 15;
@@ -112,11 +130,14 @@ public class ConnectFourPanel3D extends JPanel implements ActionListener {
 	}
 	
 	private void updateBoard() {
+		// Updates the GUI board to reflect the game board
 		for (int row = SIZE - 1; row >= 0; row--)  {
 			for (int col = 0; col < SIZE; col++) {
-				if (game3D.getPiece(col, row, game3D.getCurrentDepth()) == 0) {
+				if (game3D.getPiece(col, row, game3D.getCurrentDepth())
+						== 0) {
 					matrix[row][col].setIcon(iconPlayer1);
-				} else if (game3D.getPiece(col, row, game3D.getCurrentDepth()) == 1) {
+				} else if (game3D.getPiece(col, row, game3D.
+						getCurrentDepth()) == 1) {
 					matrix[row][col].setIcon(iconPlayer2);
 				} else {
 					matrix[row][col].setIcon(iconBlank);
@@ -126,6 +147,7 @@ public class ConnectFourPanel3D extends JPanel implements ActionListener {
 	}
 	
 	private void clearBoard() {
+		// Reset the board to be blank again
 		game3D.reset();
 		game3D.setCurrentDepth(0);
 		depthLabel.setText("Layer " + (game3D.getCurrentDepth() + 1));
@@ -146,21 +168,23 @@ public class ConnectFourPanel3D extends JPanel implements ActionListener {
 		for (int col = 0; col < SIZE; col++) {
 			if (selection[col] == comp) {
 				int row = game3D.selectCol(col);
-				if (row == -1)
+				if (row == -1) // IF column is full
 					JOptionPane.showMessageDialog(null, "Col is full!");
-				else if (game3D.getTurn() == 0) {
-					//matrix[row][col].setIcon((game.getTurn() == 1) ? iconPlayer1 : iconPlayer2);
+				// If it's player 1's turn
+				else if (game3D.getTurn() == 0) { 
 					matrix[row][col].setIcon(iconPlayer1);
-					if (game3D.isWinner(0)) { //PLAYER1
-						JOptionPane.showMessageDialog(null, "Player 1 Wins!");
+					if (game3D.isWinner(0)) { // Check for player 1 win
+						JOptionPane.showMessageDialog(null, "Player 1 "
+								+ "Wins!");
 						clearBoard();
 					}
 					game3D.finishTurn();
 					currentTurnIcon.setIcon(iconPlayer2);
-				} else {
+				} else { // If it's player 2's turn
 					matrix[row][col].setIcon(iconPlayer2);
-					if (game3D.isWinner(1)) { // PLAYER2
-						JOptionPane.showMessageDialog(null, "Player 2 Wins!");
+					if (game3D.isWinner(1)) { // Check for player 2 win
+						JOptionPane.showMessageDialog(null, "Player 2 "
+								+ "Wins!");
 						clearBoard();
 					}
 					game3D.finishTurn();
@@ -169,18 +193,24 @@ public class ConnectFourPanel3D extends JPanel implements ActionListener {
 			}
 		}
 		
+		// If current layer displayed is leftmost layer, do not allow 
+		// to get more left
 		if (game3D.getCurrentDepth() > 0) {
 			if (comp == leftButton) {
 				game3D.setCurrentDepth(game3D.getCurrentDepth() - 1);
-				depthLabel.setText("Layer " + (game3D.getCurrentDepth() + 1));
+				depthLabel.setText("Layer " + (game3D.getCurrentDepth()
+						+ 1));
 				updateBoard();
 			}
 		}
 		
+		// If current layer displayed is rightmost layer, do not allow 
+		// to get more right
 		if (game3D.getCurrentDepth() < SIZE) {
 			if (comp == rightButton) {
 				game3D.setCurrentDepth(game3D.getCurrentDepth() + 1);
-				depthLabel.setText("Layer " + (game3D.getCurrentDepth() + 1));
+				depthLabel.setText("Layer " + (game3D.getCurrentDepth() 
+						+ 1));
 				updateBoard();
 			}
 		}
